@@ -1,8 +1,10 @@
 package com.example.dwaekrany;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,7 +17,6 @@ public class SummaryActivity extends AppCompatActivity {
     public static final String EXTRA_COURSE = "com.example.dwaekrany.COURSE";
     public static final String EXTRA_LEVEL = "com.example.dwaekrany.LEVEL";
     public static final String EXTRA_NEWSLETTER = "com.example.dwaekrany.NEWSLETTER";
-    // klucz odpowiedzi (wysyłamy go Z POWROTEM do pierwszego ekranu)
     public static final String EXTRA_NUMBER = "com.example.dwaekrany.NUMBER";
 
     private TextView tvSummary;
@@ -30,6 +31,7 @@ public class SummaryActivity extends AppCompatActivity {
 
         findViewById(R.id.btnConfirm).setOnClickListener(v -> confirm());
         findViewById(R.id.btnEdit).setOnClickListener(v -> finish());
+        findViewById(R.id.btnShare).setOnClickListener(v -> share());
     }
 
     private String buildSummary() {
@@ -48,13 +50,27 @@ public class SummaryActivity extends AppCompatActivity {
         return getString(R.string.summary_format, name, email, course, level, newsletterText);
     }
 
-    // POTWIERDŹ: losujemy numer, odsyłamy go i zamykamy ekran
     private void confirm() {
         String number = "ZG/" + (1000 + new Random().nextInt(9000));
 
         Intent result = new Intent();
         result.putExtra(EXTRA_NUMBER, number);
-        setResult(RESULT_OK, result);   // ustaw odpowiedź "OK"
-        finish();                       // dopiero finish() ją wysyła
+        setResult(RESULT_OK, result);
+        finish();
+    }
+
+    // intencja NIEJAWNA: nie mówimy której aplikacji użyć,
+    // mówimy tylko "chcę wysłać tekst", a system sam pokaże listę aplikacji
+    private void share() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, tvSummary.getText().toString());
+
+        try {
+            startActivity(Intent.createChooser(intent, getString(R.string.share_via)));
+        } catch (ActivityNotFoundException e) {
+            // nie ma żadnej aplikacji do udostępniania - zamiast wywalenia pokazujemy komunikat
+            Toast.makeText(this, R.string.error_no_app, Toast.LENGTH_SHORT).show();
+        }
     }
 }
