@@ -13,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    // pola formularza - zapamiętujemy je, żeby nie szukać ich za każdym razem
     private EditText etName, etEmail;
     private Spinner spCourse;
     private SeekBar sbLevel;
@@ -25,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // łączymy kod z elementami z pliku XML (po id)
         etName = findViewById(R.id.etName);
         etEmail = findViewById(R.id.etEmail);
         spCourse = findViewById(R.id.spCourse);
@@ -36,11 +34,9 @@ public class MainActivity extends AppCompatActivity {
         setUpCourseSpinner();
         setUpLevelSeekBar();
 
-        // klik w DALEJ = otwórz drugi ekran
         findViewById(R.id.btnNext).setOnClickListener(v -> openSummary());
     }
 
-    // lista kursów z strings.xml wrzucona do rozwijanej listy
     private void setUpCourseSpinner() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this, R.array.courses, android.R.layout.simple_spinner_item);
@@ -48,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
         spCourse.setAdapter(adapter);
     }
 
-    // przy przesuwaniu suwaka pokazujemy jego wartość obok napisu
     private void setUpLevelSeekBar() {
         tvLevelValue.setText(String.valueOf(sbLevel.getProgress()));
         sbLevel.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -66,8 +61,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openSummary() {
-        // intencja JAWNA: wprost mówimy, którą klasę (ekran) otworzyć
         Intent intent = new Intent(this, SummaryActivity.class);
+
+        // putExtra = wkładamy do intencji dane "w pudełku": klucz + wartość
+        // klucze to stałe z drugiego ekranu, żeby literówka była błędem już przy kompilacji
+        intent.putExtra(SummaryActivity.EXTRA_NAME, etName.getText().toString().trim());
+        intent.putExtra(SummaryActivity.EXTRA_EMAIL, etEmail.getText().toString().trim());
+        intent.putExtra(SummaryActivity.EXTRA_COURSE, spCourse.getSelectedItem().toString());
+        intent.putExtra(SummaryActivity.EXTRA_LEVEL, sbLevel.getProgress());
+        intent.putExtra(SummaryActivity.EXTRA_NEWSLETTER, cbNewsletter.isChecked());
+
         startActivity(intent);
     }
 }
