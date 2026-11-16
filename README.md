@@ -4,8 +4,9 @@ Aplikacja z dwoma ekranami: formularz zapisu na kurs i podsumowanie.
 Dane przechodzą przez putExtra, a potwierdzenie wraca z numerem zgłoszenia
 przez ActivityResultLauncher. Przycisk Udostępnij używa intencji niejawnej.
 
-<img width="1080" height="2400" alt="Screenshot_20261116_011257" src="https://github.com/user-attachments/assets/6fb9072d-f368-4f0d-8d0f-ce80fe2630df" />
 <img width="1080" height="2400" alt="Screenshot_20261116_011245" src="https://github.com/user-attachments/assets/2f921047-51d6-42e4-a424-89b418c713dc" />
+<img width="1080" height="2400" alt="Screenshot_20261116_011257" src="https://github.com/user-attachments/assets/6fb9072d-f368-4f0d-8d0f-ce80fe2630df" />
+
 
 ## Dlaczego rejestracja wyniku jest polem klasy, a nie jest w obsłudze kliknięcia?
 
