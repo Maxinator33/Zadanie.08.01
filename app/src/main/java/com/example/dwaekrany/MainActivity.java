@@ -9,9 +9,28 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.snackbar.Snackbar;
+
 public class MainActivity extends AppCompatActivity {
+
+    // To jest "odbiornik odpowiedzi" z drugiego ekranu.
+    // MUSI być polem klasy (nie w kliknięciu), bo rejestracja musi istnieć,
+    // zanim ekran stanie się widoczny - inaczej aplikacja się wywali.
+    private final ActivityResultLauncher<Intent> summaryLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                // RESULT_OK = użytkownik kliknął POTWIERDŹ
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    String number = result.getData()
+                            .getStringExtra(SummaryActivity.EXTRA_NUMBER);
+                    showRegistered(number);
+                }
+                // inaczej (Wstecz / POPRAW DANE) = RESULT_CANCELED, nic nie robimy
+            });
 
     private EditText etName, etEmail;
     private Spinner spCourse;
@@ -62,15 +81,20 @@ public class MainActivity extends AppCompatActivity {
 
     private void openSummary() {
         Intent intent = new Intent(this, SummaryActivity.class);
-
-        // putExtra = wkładamy do intencji dane "w pudełku": klucz + wartość
-        // klucze to stałe z drugiego ekranu, żeby literówka była błędem już przy kompilacji
         intent.putExtra(SummaryActivity.EXTRA_NAME, etName.getText().toString().trim());
         intent.putExtra(SummaryActivity.EXTRA_EMAIL, etEmail.getText().toString().trim());
         intent.putExtra(SummaryActivity.EXTRA_COURSE, spCourse.getSelectedItem().toString());
         intent.putExtra(SummaryActivity.EXTRA_LEVEL, sbLevel.getProgress());
         intent.putExtra(SummaryActivity.EXTRA_NEWSLETTER, cbNewsletter.isChecked());
 
-        startActivity(intent);
+        // zamiast startActivity: uruchamiamy przez launcher, żeby dostać odpowiedź
+        summaryLauncher.launch(intent);
+    }
+
+    // pasek z numerem zgłoszenia na dole ekranu
+    private void showRegistered(String number) {
+        Snackbar.make(findViewById(R.id.main),
+                getString(R.string.registered, number),
+                Snackbar.LENGTH_LONG).show();
     }
 }
